@@ -17,12 +17,12 @@ public class App {
 //	        Aeroporto teste = grafo.congestionamento();
 //	        System.out.println(teste.getNome());
 	        
-	       ArrayList<Aeroporto> teste1 = grafo.rotaMenorCusto("HTI", "HID");
-//	       if(teste1 != null){
-//	    	   for(Aeroporto a : teste1){
-//	    		   System.out.println(a.getCodigo() + ", ");
-//	    	   }
-//	       }
+	       ArrayList<Aeroporto> teste1 = grafo.rotaMenorCusto("HTI", "MEL");
+	       if(teste1 != null){
+	    	   for(Aeroporto a : teste1){
+	    		   System.out.println(a.getCodigo() + ", ");
+	    	   }
+	       }
 	}
 
 }

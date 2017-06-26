@@ -42,7 +42,7 @@ public class Aeroporto {
 		this.rotasSaindo.add(rota);
 	}
 	
-	public void addRotaChegada(Rota rota){
+	public void addRotaChegada(Rota rota){	
 		this.rotasChegando.add(rota);
 	}
 	

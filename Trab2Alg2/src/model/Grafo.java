@@ -18,7 +18,7 @@ public class Grafo {
 	private ArrayList<Aeroporto> aeroportos;
 	
 	
-	public static class Vertice implements Comparable<Vertice>{
+	static class Vertice implements Comparable<Vertice>{
 		private Aeroporto aero;
 		private double dist;
 		private Vertice pai;
@@ -30,6 +30,11 @@ public class Grafo {
 			this.visitado = false;
 		}
 		
+		@Override
+		public String toString() {
+			return "Vertice [aero=" + aero + ", dist=" + dist + ", pai=" + pai + ", visitado=" + visitado + "]";
+		}
+
 		public Aeroporto getAeroporto(){
 			return this.aero;
 		}
@@ -190,7 +195,7 @@ public class Grafo {
 		Vertice vizinho = new Vertice(a2,Double.MAX_VALUE);
 		ArrayList<Vertice> naoVisitados = new ArrayList<Vertice>();
 		ArrayList<Aeroporto> result = new ArrayList<>();
-		
+		boolean debug = false;
 		for (Aeroporto a : aeroportos) {
 			if (a.getIdentificador().equals(a1.getIdentificador())){
 			Vertice v = new Vertice(a,0);
@@ -213,7 +218,7 @@ public class Grafo {
 //		});
 //		naoVisitados.remove(0);
 		
-		System.out.println(naoVisitados.get(0).getAeroporto().getCodigo());
+		//System.out.println(naoVisitados.get(0).getAeroporto().getCodigo());
 //		for (Vertice v : naoVisitados){
 //			System.out.println(v.getDistancia());
 //		}
@@ -222,12 +227,15 @@ public class Grafo {
 			atual = naoVisitados.get(0);
 			for (Rota r : atual.getAeroporto().getRotasSaida()) {		
 				for (Vertice v : naoVisitados){
-					if (v.getAeroporto().equals(r.getDestino())){
+					if (v.getAeroporto().getCodigo().equals(r.getDestino())){
+						debug = true;
 						vizinho = v;
+						break ;
 					}
 				}
-				if (!vizinho.isVisitado()) {
-					if (vizinho.getDistancia() > (atual.getDistancia() + r.getDist())) {
+				
+				if (!vizinho.isVisitado() && debug) {
+					if (teste(r.getDestino(), a1.getIdentificador()) && vizinho.getDistancia() > (atual.getDistancia() + r.getDist())) {
 						vizinho.setDistancia(atual.getDistancia() + r.getDist());
 						vizinho.setPai(atual);
 						if (vizinho.getAeroporto().getCodigo().equals(a2.getCodigo())) {
@@ -237,17 +245,21 @@ public class Grafo {
 							while (verticeCaminho.getPai() != null) {
 								menorCaminho.add(verticeCaminho.getPai());
 								verticeCaminho = verticeCaminho.getPai();
-
+								
 							}
-							menorCaminho.sort((v1, v2) -> v1.compareTo(v2));
+							menorCaminho.sort((v1, v2) ->Double.compare(v1.getDistancia(), v2.getDistancia()));			
+							
+								for(Vertice v:menorCaminho)
+									      System.out.println(v.toString());		
+								System.out.println("Acabou este acima \n");
 						}
 					}
 				}
-
+				debug =  false;
 			}
 			atual.visitar();
-			naoVisitados.remove(atual);
-			naoVisitados.sort((v1, v2) -> v1.compareTo(v2));
+			naoVisitados.remove(0);
+			naoVisitados.sort((v1, v2) ->Double.compare(v1.getDistancia(), v2.getDistancia()));
 		}
 		for (Vertice v : menorCaminho){
 			result.add(v.getAeroporto());
@@ -255,7 +267,10 @@ public class Grafo {
 		return result;	
 	}
 	
-	
+	public boolean teste(String cod, String codPais){
+		Aeroporto a = buscarCodigo(cod);
+		return a.getIdentificador().equals(codPais);
+	}
 	
 	public Aeroporto buscarCodigo(String codigo) {
 		for (Aeroporto a : aeroportos) {
