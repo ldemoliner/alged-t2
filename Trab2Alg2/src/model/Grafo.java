@@ -249,9 +249,9 @@ public class Grafo {
 							}
 							menorCaminho.sort((v1, v2) ->Double.compare(v1.getDistancia(), v2.getDistancia()));			
 							
-								for(Vertice v:menorCaminho)
-									      System.out.println(v.toString());		
-								System.out.println("Acabou este acima \n");
+//								for(Vertice v:menorCaminho)
+//									      System.out.println(v.toString());		
+//								System.out.println("Acabou este acima \n");
 						}
 					}
 				}
@@ -265,6 +265,15 @@ public class Grafo {
 			result.add(v.getAeroporto());
 		}
 		return result;	
+	}
+	
+	public ArrayList<String> cias(String a1, String a2){
+		ArrayList<String> result = new ArrayList<>();
+		for (Rota r : buscarCodigo(a1).getRotasSaida()){
+			if (r.getDestino().equals(a2))
+				result.add(r.getCia());
+		}		
+		return result;
 	}
 	
 	public boolean teste(String cod, String codPais){

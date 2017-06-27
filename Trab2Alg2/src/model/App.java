@@ -19,9 +19,15 @@ public class App {
 	        
 	       ArrayList<Aeroporto> teste1 = grafo.rotaMenorCusto("HTI", "MEL");
 	       if(teste1 != null){
-	    	   for(Aeroporto a : teste1){
-	    		   System.out.println(a.getCodigo() + ", ");
+	    	   for (int i = 0; i < teste1.size()-1; i++){
+	    		   System.out.println(teste1.get(i).getCodigo() + " -> " + teste1.get(i+1).getCodigo() + " pelas airlines:");
+	    		   for(String s : grafo.cias(teste1.get(i).getCodigo(), teste1.get(i+1).getCodigo())){
+	    			   System.out.println(s);
+	    		   }
 	    	   }
+//	    	   for(Aeroporto a : teste1){
+//	    		   System.out.println(a.getCodigo() + ", ");
+//	    	   }
 	       }
 	}
 
