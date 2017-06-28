@@ -16,7 +16,7 @@ import java.util.Stack;
 
 public class Grafo {
 	private ArrayList<Aeroporto> aeroportos;
-	
+	private ArrayList<Rota> rotas;
 	
 	static class Vertice implements Comparable<Vertice>{
 		private Aeroporto aero;
@@ -81,6 +81,7 @@ public class Grafo {
 	
 	public Grafo(){
 		aeroportos = new ArrayList<>();
+		rotas = new ArrayList<>();
 	}
 	
 
@@ -145,7 +146,7 @@ public class Grafo {
 				codDestino = sc.next();
 				dist = Double.parseDouble(sc.next());
 				codCia = sc.next();
-				//VER COMO QUE VAI VIR O .DAT DAS ROTAS
+
 				for (Aeroporto a : aeroportos) {
 					if (codOrigem.equals(a.getCodigo())){
 						a.addRotaSaida(new Rota(codCia, codOrigem, codDestino, dist));
@@ -153,10 +154,12 @@ public class Grafo {
 						a.addRotaChegada(new Rota(codCia, codOrigem, codDestino, dist));
 					}
 				}
+				rotas.add(new Rota(codCia, codOrigem, codDestino, dist));
 				sc.close();
 			}
 			System.out.println("Rotas carregadas");
-		} catch (IOException e) {
+		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println(e);
 		}
 	}
@@ -210,18 +213,6 @@ public class Grafo {
 		
 		naoVisitados.sort((v1, v2) ->Double.compare(v1.getDistancia(), v2.getDistancia()));
 		
-		//naoVisitados.sort((v1, v2) -> v1.compareTo(v2));
-//		Collections.sort(naoVisitados, new Comparator<Vertice>() {
-//	        @Override public int compare(Vertice p1, Vertice p2) {
-//	            return (int) (p1.getDistancia() - p2.getDistancia());
-//	        }
-//		});
-//		naoVisitados.remove(0);
-		
-		//System.out.println(naoVisitados.get(0).getAeroporto().getCodigo());
-//		for (Vertice v : naoVisitados){
-//			System.out.println(v.getDistancia());
-//		}
 		
 		while (!naoVisitados.isEmpty()) {
 			atual = naoVisitados.get(0);
@@ -249,9 +240,74 @@ public class Grafo {
 							}
 							menorCaminho.sort((v1, v2) ->Double.compare(v1.getDistancia(), v2.getDistancia()));			
 							
-//								for(Vertice v:menorCaminho)
-//									      System.out.println(v.toString());		
-//								System.out.println("Acabou este acima \n");
+						}
+					}
+				}
+				debug =  false;
+			}
+			atual.visitar();
+			naoVisitados.remove(0);
+			naoVisitados.sort((v1, v2) ->Double.compare(v1.getDistancia(), v2.getDistancia()));
+		}
+		for (Vertice v : menorCaminho){
+			result.add(v.getAeroporto());
+		}
+		return result;	
+	}
+	
+	public ArrayList<Aeroporto> caminhoExclusivo(String cod1, String cod2, String cia){
+		Aeroporto a1 = buscarCodigo(cod1);
+		Aeroporto a2 = buscarCodigo(cod2);
+		
+		if (a1 == null || a2 == null){
+			System.out.println("Aeroportos não encontrados");
+			return null;
+		}
+		
+		ArrayList<Vertice> menorCaminho = new ArrayList<Vertice>();
+		Vertice verticeCaminho = new Vertice(new Aeroporto(".",".","."), 0);
+		Vertice atual = new Vertice(a1,0);
+		Vertice vizinho = new Vertice(a2,Double.MAX_VALUE);
+		ArrayList<Vertice> naoVisitados = new ArrayList<Vertice>();
+		ArrayList<Aeroporto> result = new ArrayList<>();
+		boolean debug = false;
+		for (Aeroporto a : aeroportos) {
+			Vertice v = new Vertice(a,0);
+			if (a.getCodigo().equals(a1.getCodigo())) {
+				v.setDistancia(0);
+			} else {
+				v.setDistancia(Double.MAX_VALUE);
+			}
+			naoVisitados.add(v);	
+		}
+		
+		naoVisitados.sort((v1, v2) ->Double.compare(v1.getDistancia(), v2.getDistancia()));
+		
+		while (!naoVisitados.isEmpty()) {
+			atual = naoVisitados.get(0);
+			for (Rota r : atual.getAeroporto().getRotasSaida()) {		
+				for (Vertice v : naoVisitados){
+					if (v.getAeroporto().getCodigo().equals(r.getDestino()) && r.getCia().equals(cia)){
+						debug = true;
+						vizinho = v;
+						break ;
+					}
+				}
+				
+				if (!vizinho.isVisitado() && debug) {
+					if (teste(r.getDestino(), a1.getIdentificador()) && vizinho.getDistancia() > (atual.getDistancia() + r.getDist())) {
+						vizinho.setDistancia(atual.getDistancia() + r.getDist());
+						vizinho.setPai(atual);
+						if (vizinho.getAeroporto().getCodigo().equals(a2.getCodigo())) {
+							menorCaminho.clear();
+							verticeCaminho = vizinho;
+							menorCaminho.add(vizinho);
+							while (verticeCaminho.getPai() != null) {
+								menorCaminho.add(verticeCaminho.getPai());
+								verticeCaminho = verticeCaminho.getPai();
+								
+							}
+							menorCaminho.sort((v1, v2) ->Double.compare(v1.getDistancia(), v2.getDistancia()));			
 						}
 					}
 				}
@@ -288,4 +344,20 @@ public class Grafo {
 		}
 		return null; // não achamos!
 	}
+	
+	public boolean autonomia(double dist, String cia){
+		int total = 0;
+		int pode = 0;
+		for(Rota r : rotas){
+			if(r.getCia().equals(cia)){
+				total++;
+				if(r.getDist() <= dist){
+					pode++;
+				}
+			}
+		}
+		double setenta = (70*total)/100;
+		return pode >= setenta;
+	}
+	
 }
