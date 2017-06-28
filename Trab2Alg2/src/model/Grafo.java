@@ -356,8 +356,7 @@ public class Grafo {
 				}
 			}
 		}
-		double setenta = (70*total)/100;
-		return pode >= setenta;
+		return pode >= 0.7*total;
 	}
 	
 }
