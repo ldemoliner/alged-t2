@@ -36,10 +36,11 @@ public class App {
 	       while(choice != 0){
 	    	   System.out.println("\n============================================  MENU  ============================================\n"+
 	    			   "\nDigite a opção desejada:\n "+
-	    			   "\n1 - Verificar a rota de menor custo, em termos de distância total, entre dois aeroportos"+
+	    			   "\n1 - Verificar a rota de menor custo, em termos de distância total, entre dois aeroportos do mesmo país"+
 	    			   "\n2 - Verificar se uma companhia aérea realiza uma rota exclusiva entre dois aeroportos"+
 	    			   "\n3 - Verificar a autonomia de voo de um avião"+
-	    			   "\n4 - Verificar um aeroporto de um determinado país possui maiores chances de congestionamento\n"+
+	    			   "\n4 - Verificar se um aeroporto de um determinado país possui maiores chances de congestionamento\n"+
+	    			   "\n0 - Para sair"+
 	    			   "\n================================================================================================");
 	    	   		try{
 	    	   		   choice = sc.nextInt();
@@ -63,7 +64,10 @@ public class App {
 					case 4:
 						congestionamento();
 						menu();
-						break;			
+						break;	
+					case 0:
+						System.out.println("Não aceito menos de 10, vlw flw");
+						break;
 					default:
 						System.out.println("Opção inválida.");
 						break;
@@ -77,7 +81,19 @@ public class App {
 	    			String a1=sc.next();
 	    			System.out.println("\nDigite o código do segundo aeroporto:");
 	    			String a2=sc.next();
-	    			g.rotaMenorCusto(a1, a2);
+	    			
+	    			System.out.println("\nTalvez demore um pouco, aguardar");
+	    			ArrayList<Aeroporto> result = g.rotaMenorCusto(a1, a2);
+	    			 if(result != null && result.size() > 1){
+				    	   for (int i = 0; i < result.size()-1; i++){
+				    		   System.out.println(result.get(i).getCodigo() + " -> " + result.get(i+1).getCodigo() + " pelas airlines:");
+				    		   for(String s : g.cias(result.get(i).getCodigo(), result.get(i+1).getCodigo())){
+				    			   System.out.println(s);
+				    		   }
+				    	   }
+					 } else {
+						 System.out.println("Não existe caminho de " + a1 + " para " + a2 + " pelo país dos aeroportos");
+					 }
 	    		}
 	    		catch (InputMismatchException e) {
 	    			System.out.println("\nInformação inválida:");
@@ -89,7 +105,22 @@ public class App {
 					System.out.println("\nDigite o nome de uma companhia aérea:");
 					String nome = sc.next();
 					
-					g.caminhoExclusivo(nome,"HTI","HID");
+					System.out.println("\nDigite o código do primeiro aeroporto");
+					String a1 = sc.next();
+					
+					System.out.println("\nDigite o código do primeiro aeroporto");
+					String a2 = sc.next();
+					
+					System.out.println("\nTalvez demore um pouco, aguardar");
+					ArrayList<Aeroporto> result = g.caminhoExclusivo(a1,a2,nome);
+					 if(result != null){
+				    	   for (int i = 0; i < result.size()-1; i++){
+				    		   System.out.println(result.get(i).getCodigo() + " -> " + result.get(i+1).getCodigo());
+				    	   }
+					 } else {
+						 System.out.println("Não existe caminho exclusivo de " + a1 + " para " + a2 + " pela cia " + nome);
+					 }
+					// G3,HTI, HID
 				} catch (InputMismatchException e) {
 					System.out.println("\nInformação inválida:");
 				} catch (Exception e) {
@@ -99,11 +130,14 @@ public class App {
 			
 			public static void autonomia(){
 				try{
-					System.out.println("\nDigite a distância:");
+					System.out.println("\nDigite a capacidade de voo do avião:");
 					double dist = sc.nextDouble();
 					System.out.println("\nDigite o nome da companhia aérea:");
 					String nome = sc.next();
-					g.autonomia(dist,nome);
+				if(g.autonomia(dist,nome))
+					System.out.println("O avião tem capacidade para realizar pelo menos 70 por cento das rotas desta cia");
+				else
+					System.out.println("O avião não tem capacidade para realizar pelo menos 70 por cento das rotas desta cia");
 				}
 				catch (InputMismatchException e) {
 					System.out.println("\nInformação inválida:\n");
@@ -112,9 +146,10 @@ public class App {
 	       
 			public static void congestionamento(){
 				try{
-					System.out.println("\n Digite o nome do país:");
+					System.out.println("\n Digite o codigo do país:");
 					String pais = sc.next();
-					g.congestionamento();
+					
+					System.out.println("O aeroporto com maior probabilidade de congestionamento do país " + pais + " é: " + g.congestionamento(pais).getNome());
 				}	
 				catch (InputMismatchException e) {
 					System.out.println("\nInformação inválida:");

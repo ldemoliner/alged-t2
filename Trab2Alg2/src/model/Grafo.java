@@ -164,10 +164,10 @@ public class Grafo {
 		}
 	}
 	
-	public Aeroporto congestionamento(){
+	public Aeroporto congestionamento(String pais){
 		Aeroporto maior = new Aeroporto("MERECO", "UM", "10");
 		for(Aeroporto a : aeroportos){
-			if (a.getRotasChegada().size() > maior.getRotasChegada().size())
+			if ((a.getRotasChegada().size() > maior.getRotasChegada().size()) && a.getIdentificador().equals(pais))
 				maior = a;
 		}		
 		return maior;
