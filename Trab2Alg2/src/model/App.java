@@ -113,7 +113,7 @@ public class App {
 					
 					System.out.println("\nTalvez demore um pouco, aguardar");
 					ArrayList<Aeroporto> result = g.caminhoExclusivo(a1,a2,nome);
-					 if(result != null){
+					 if(result != null && result.size() > 1){
 				    	   for (int i = 0; i < result.size()-1; i++){
 				    		   System.out.println(result.get(i).getCodigo() + " -> " + result.get(i+1).getCodigo());
 				    	   }

@@ -295,7 +295,7 @@ public class Grafo {
 				}
 				
 				if (!vizinho.isVisitado() && debug) {
-					if (teste(r.getDestino(), a1.getIdentificador()) && vizinho.getDistancia() > (atual.getDistancia() + r.getDist())) {
+					if (vizinho.getDistancia() > (atual.getDistancia() + r.getDist())) {
 						vizinho.setDistancia(atual.getDistancia() + r.getDist());
 						vizinho.setPai(atual);
 						if (vizinho.getAeroporto().getCodigo().equals(a2.getCodigo())) {
